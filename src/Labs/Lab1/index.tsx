@@ -1,7 +1,6 @@
 export default function Lab1() {
     return (
         <div id="wd-lab1">
-            <h1>Justin Gubbens, CS5610</h1>
             <h2>Lab 1</h2>
             <h3>HTML Examples</h3>
             <div id="wd-h-tag">
