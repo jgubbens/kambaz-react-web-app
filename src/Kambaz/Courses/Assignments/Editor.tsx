@@ -1,114 +1,113 @@
+import { Form, Col, Row, Button, FormSelect } from "react-bootstrap";
+
 export default function AssignmentEditor() {
     return (
-      <div id="wd-assignments-editor">
+      <div id="wd-assignments-editor" className="wd-padding-fat">
         <label htmlFor="wd-name">Assignment Name</label>
-        <input id="wd-name" value="A1 - ENV + HTML" /><br /><br />
-        <textarea id="wd-description">
-          The assignment is available online Submit a link to the landing page of
-        </textarea>
         <br />
-        <table>
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-points">Points</label>
-            </td>
-            <td>
-              <input id="wd-points" value={100} />
-            </td>
-          </tr>
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-group">Assignment Group</label>
-            </td>
-            <td>
-            <select defaultValue="ASSIGNMENTS" id="wd-group">
-                <option value="ASSIGNMENTS">ASSIGNMENTS</option>
-                <option value="QUIZZES">QUIZZES</option>
-                <option value="EXAMS">EXAMS</option>
-                <option value="PROJECTS">PROJECTS</option>
-            </select><br/>
-            </td>
-          </tr>
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-display-grade-as">Display Grade as</label>
-            </td>
-            <td>
-            <select defaultValue="Percentage" id="wd-display-grade-as">
-                <option value="Percentage">Percentage</option>
-                <option value="Decimal">Decimal</option>
-            </select><br/>
-            </td>
-          </tr>
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-submission-type">Submission Type</label>
-            </td>
-            <td>
-            <select defaultValue="Online" id="wd-submission-type">
-                <option value="Online">Online</option>
-                <option value="In Person">In Person</option>
-            </select><br/>
-            </td>
-          </tr>
-          <tr>
-            <td>
-                Online Entry Options<br/>
-                <input type="checkbox" name="check-genre" id="wd-text-entry"/>
-                <label htmlFor="wd-text-entry">Text Entry</label><br/>
-                <input type="checkbox" name="check-genre" id="wd-website-url"/>
-                <label htmlFor="wd-website-url">Website URL</label><br/>
-                <input type="checkbox" name="check-genre" id="wd-media-recordings"/>
-                <label htmlFor="wd-media-recordings">Media Recordings</label><br/>
-                <input type="checkbox" name="check-genre" id="wd-student-annotation"/>
-                <label htmlFor="wd-student-annotation">Student Annotation</label><br/>
-                <input type="checkbox" name="check-genre" id="wd-file-upoad"/>
-                <label htmlFor="wd-file-upload">File Upload</label><br/>
-            </td>
-          </tr>
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-assign-to">Assign to</label>
-            </td>
-            <td>
-              <input id="wd-assign-to" value="Everyone" />
-            </td>
-          </tr>
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-due-date">Due</label>
-            </td>
-            <td>
-            <input type="date"
-                        value="2024-05-13"
-                        id="wd-due-date"/><br/>
-            </td>
-          </tr>
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-available-from">Available from</label>
-            </td>
-            <td align="right" valign="top">
-              <label htmlFor="wd-available-until">Until</label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-                <input type="date"
-                            value="2024-05-06"
-                            id="wd-available-from"/><br/>
-            </td>
-            <td>
-                <input type="date"
-                            value="2024-05-13"
-                            id="wd-available-until"/><br/>
-            </td>
-          </tr>
-          <tr>
-            <button>Cancel</button>
-            <button>Save</button>
-          </tr>
-        </table>
+        <input id="wd-name" value="A1" style={{ width:'100%' }} /><br /><br />
+        <textarea id="wd-description" style={{ width:'100%', height: '200px' }} >
+          The assignment is available online....
+        </textarea>
+
+        <div id="wd-css-responsive-forms-2">
+                <h3>Responsive forms</h3>
+                <Form>
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={4} className="text-end"> Points </Form.Label>
+                        <Col sm={8}>
+                            <Form.Control type="email" value="100" />
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={4} className="text-end"> Assignment Group </Form.Label>
+                        <Col sm={8}>
+                            <FormSelect>
+                              <option value="ASSIGNMENTS">ASSIGNMENTS</option>
+                              <option value="QUIZZES">QUIZZES</option>
+                              <option value="EXAMS">EXAMS</option>
+                              <option value="PROJECTS">PROJECTS</option>
+                            </FormSelect>
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={4} className="text-end"> Display grade as </Form.Label>
+                        <Col sm={8}>
+                            <FormSelect>
+                              <option value="Percentage">Percentage</option>
+                              <option value="Decimal">Decimal</option>
+                            </FormSelect>
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={4} className="text-end"> Submission Type </Form.Label>
+                        <Col sm={8}>
+                          <Form.Group className="border p-3">
+                            <FormSelect>
+                              <option value="Online">Online</option>
+                              <option value="In Person">In Person</option>
+                            </FormSelect>
+                            <Form.Label style={{ fontWeight: 'bold' }}
+                              className='wd-padding-thin'> Online Entry Options </Form.Label>
+                            <Form.Check type="checkbox" className='wd-padding-thin ms-3' label="Text Entry"
+                              name="check"/>
+                            <Form.Check type="checkbox" className='wd-padding-thin ms-3' label="Website URL"
+                              name="check"/>
+                            <Form.Check type="checkbox" className='wd-padding-thin ms-3' label="Media Recordings"
+                              name="check"/>
+                            <Form.Check type="checkbox" className='wd-padding-thin ms-3' label="Student Annotation"
+                              name="check"/>
+                            <Form.Check type="checkbox" className='wd-padding-thin ms-3' label="File Uploads"
+                              name="check"/>
+                          </Form.Group>
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3">
+                        <Form.Label column sm={4} className="text-end"> Assign </Form.Label>
+                        <Col sm={8}>
+                          <Form.Group className="border p-3">
+                            <Form.Label style={{ fontWeight: 'bold' }}
+                              className='wd-padding-thin'>Assign to</Form.Label>
+                            <FormSelect>
+                              <option value="Everyone">Everyone</option>
+                            </FormSelect>
+                            <Form.Label style={{ fontWeight: 'bold' }}
+                              className='wd-padding-thin'> Due </Form.Label>
+                              <Form.Control
+                                type="datetime-local"
+                                value="2024-05-13T23:59"
+                                onChange={(e) => console.log(e.target.value)} // Example of handling change
+                              />
+                            <Form.Group as={Row}>
+                              <Col sm={6}>
+                                <Form.Label style={{ fontWeight: 'bold' }}
+                                  className='wd-padding-thin'> Available from </Form.Label>
+                                <Form.Control
+                                  type="datetime-local"
+                                  value="2024-05-06T00:00"
+                                  onChange={(e) => console.log(e.target.value)} // Example of handling change
+                                />
+                              </Col>
+                              <Col sm={6}>
+                                <Form.Label style={{ fontWeight: 'bold' }}
+                                  className='wd-padding-thin'> Until </Form.Label>
+                                <Form.Control
+                                  type="datetime-local"
+                                  value="2024-05-13T23:59"
+                                  onChange={(e) => console.log(e.target.value)} // Example of handling change
+                                />
+                              </Col>
+                            </Form.Group>
+                            
+                          </Form.Group>
+                        </Col>
+                    </Form.Group>
+                    <Button type="submit" className="float-end ms-1" variant="outline-dark"
+                      style={{ backgroundColor:'red', color:'white' }}>Save</Button>
+                    <Button className="float-end ms-3" variant="outline-dark"
+                      style={{ backgroundColor:'lightgray' }}>Cancel</Button>
+                </Form>
+            </div>
       </div>
   );
 }  
