@@ -6,6 +6,9 @@ export default function CourseNavigation() {
   const { cid } = useParams();
   const course = courses.find((course) => course._id === cid);
   const location = useLocation();
+  if (!course) {
+    return <div>Assignment not found</div>;
+  }
   return (
     <div id="wd-courses-navigation" className="wd list-group fs-5 rounded-0">
       {links.map((link) => (

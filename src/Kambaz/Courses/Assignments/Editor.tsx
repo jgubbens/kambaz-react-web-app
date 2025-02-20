@@ -6,6 +6,9 @@ export default function AssignmentEditor() {
   const { cid, aid } = useParams();
   const assignments = db.assignments;
   const assignment = assignments.find((assignment) => assignment._id === aid);
+  if (!assignment) {
+    return <div>Assignment not found</div>;
+  }  
   return (
     <div id="wd-assignments-editor" className="wd-padding-fat">
       <label htmlFor="wd-name">Assignment Name</label>
