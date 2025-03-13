@@ -6,7 +6,7 @@ import { Button } from "react-bootstrap";
 import { TfiTarget } from "react-icons/tfi";
 import { IoIosStats } from "react-icons/io";
 import { HiOutlineSpeakerphone } from "react-icons/hi";
-{/* Find more icons */}
+
 export default function CourseStatus() {
  return (
    <div id="wd-course-status" style={{ width: "350px" }}>

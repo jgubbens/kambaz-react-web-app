@@ -6,11 +6,15 @@ import { RiSurveyLine } from "react-icons/ri";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { useParams } from "react-router";
-import * as db from "../../Database";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteAssignment } from "./reducer";
 
 export default function Assignments() {
+  const dispatch = useDispatch();
   const { cid } = useParams();
-  const assignments = db.assignments;
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
+
   return (
     <div>
       <AssignmentsControls />
@@ -40,27 +44,63 @@ export default function Assignments() {
                   <RiSurveyLine className="me-2 fs-3" style={{ color: 'green' }}/>
                   <Container>
                     <div>
-                      <a href={`#/Kambaz/Courses/${assignment.course}/Assignments/${assignment._id}`}
-                        className="wd-assignment-link wd-padding-thin-sides" 
+                      {currentUser.role === "FACULTY" ? (
+                        <a href={`#/Kambaz/Courses/${assignment.course}/Assignments/${assignment._id}`}
+                          className="wd-assignment-link wd-padding-thin-sides" 
+                          style={{ fontWeight: 'bold', color: 'black', textDecoration: 'none' }}>
+                          {assignment.title}
+                        </a>
+                      ) : (
+                        <span className="wd-assignment-link wd-padding-thin-sides" 
                         style={{ fontWeight: 'bold', color: 'black', textDecoration: 'none' }}>
-                        {assignment.title}
-                      </a>
+                          {assignment.title}
+                        </span>
+                      )}
                     </div>
                     <div>
                       <span className="wd-padding-thin-sides" style={{ color: "red" }}>Multiple Modules</span>
                       |
-                      <span className="wd-padding-thin-sides"><b>Not available until </b> May 6 at 12:00 am</span>
+                      <span className="wd-padding-thin-sides">
+                        <b>Not available until </b>
+                        {new Date(assignment.availableFrom).toLocaleString('en-US', { 
+                          weekday: 'long', 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric', 
+                          hour: 'numeric', 
+                          minute: 'numeric', 
+                          second: 'numeric', 
+                          hour12: true 
+                        })}
+                      </span>
                       |
                     </div>
                     <div>
-                      <span className="wd-padding-thin-sides"><b>Due</b> May 13 at 11:59 pm</span>
+                    <span className="wd-padding-thin-sides">
+                      <b>Due</b> {new Date(assignment.dueDate).toLocaleString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: 'numeric', 
+                        minute: 'numeric', 
+                        second: 'numeric', 
+                        hour12: true 
+                      })}
+                    </span>
                       |
-                      <span className="wd-padding-thin-sides">100 pts</span>
+                      <span className="wd-padding-thin-sides">{assignment.points} pts</span>
                     </div>
                   </Container>
                 </div>
                 <div className="d-flex justify-content-center ms-auto">
-                  <AssignmentControlButtons />
+                <AssignmentControlButtons
+                  assignmentId={assignment._id}
+                  onDelete={(id) => {
+                    dispatch(deleteAssignment(id));
+                  }}
+                />
+
                 </div>
               </ListGroup.Item>
             </ListGroup>
