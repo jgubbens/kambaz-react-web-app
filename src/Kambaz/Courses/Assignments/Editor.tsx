@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Form, Col, Row, Button, FormSelect } from 'react-bootstrap';
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { addAssignment, updateAssignment } from './reducer.ts';
 import { useNavigate } from 'react-router-dom';
