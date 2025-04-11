@@ -7,13 +7,27 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteAssignment } from "./reducer";
+import { setAssignments, deleteAssignment } from "./reducer";
+import * as coursesClient from "../client";
+import * as assignmentsClient from "./client";
+import { useEffect } from "react";
 
 export default function Assignments() {
   const dispatch = useDispatch();
   const { cid } = useParams();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
+  const fetchAssignments = async () => {
+    const assignments = await coursesClient.findAssignmentsForCourse(cid as string);
+    dispatch(setAssignments(assignments));
+  }
+  useEffect(() => {
+    fetchAssignments();
+  }, []);
+  const removeAssignment = async (assignmentId: string) => {
+    await assignmentsClient.deleteAssignment(assignmentId);
+    dispatch(deleteAssignment(assignmentId));
+  };
 
   return (
     <div>
@@ -35,7 +49,6 @@ export default function Assignments() {
             </div>
           </div>
           {assignments
-          .filter((assignment: any) => assignment.course === cid)
           .map((assignment: any) => (
             <ListGroup className="wd-lessons rounded-0">
               <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
@@ -97,7 +110,7 @@ export default function Assignments() {
                 <AssignmentControlButtons
                   assignmentId={assignment._id}
                   onDelete={(id) => {
-                    dispatch(deleteAssignment(id));
+                    removeAssignment(id)
                   }}
                 />
 

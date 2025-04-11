@@ -4,6 +4,8 @@ import { useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { addAssignment, updateAssignment } from './reducer.ts';
 import { useNavigate } from 'react-router-dom';
+import * as coursesClient from "../client";
+import * as assignmentsClient from "./client";
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams();
@@ -16,7 +18,7 @@ export default function AssignmentEditor() {
     assignment = {
       _id: 'ID',
       title: 'Title',
-      course: {cid},
+      course: cid,
       description: 'Assignment Description',
       points: 12,
       dueDate: '2024-05-13T23:59',
@@ -33,8 +35,23 @@ export default function AssignmentEditor() {
   const [availableUntil, setAvailableUntil] = useState(assignment.availableUntil);
   const course = cid;
   const navigate = useNavigate();
+  const createAssignment = async () => {
+    if (!cid) return;
+    const newAssignment = {
+      title,
+      course: cid,
+      description,
+      points,
+      dueDate,
+      availableFrom,
+      availableUntil,
+    };
+    const assignment = await coursesClient.createAssignmentForCourse(cid, newAssignment);
+    dispatch(addAssignment(assignment));
+    return assignment;
+  };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const updatedAssignment = {
       _id: assignment._id,
       title,
@@ -46,12 +63,16 @@ export default function AssignmentEditor() {
       availableUntil,
     };
     if (assignment._id === "ID") {
-      dispatch(addAssignment(updatedAssignment));
+      console.log("Creating new assignment...");
+      await createAssignment();
     } else {
-      dispatch(updateAssignment(updatedAssignment));
+      try {
+        const saved = await assignmentsClient.updateAssignment(updatedAssignment);
+        dispatch(updateAssignment(saved));
+      } catch (err) {
+        console.error("Failed to update assignment:", err);
+      }
     }
-    console.log("Updated Assignments: ", assignments);
-    console.log("added assignment: ", assignment);
     navigate(-1);
   };
 
