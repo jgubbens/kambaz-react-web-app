@@ -107,12 +107,14 @@ export default function Assignments() {
                   </Container>
                 </div>
                 <div className="d-flex justify-content-center ms-auto">
-                <AssignmentControlButtons
-                  assignmentId={assignment._id}
-                  onDelete={(id) => {
-                    removeAssignment(id)
-                  }}
-                />
+                {currentUser.role === "FACULTY" &&
+                  <AssignmentControlButtons
+                    assignmentId={assignment._id}
+                    onDelete={(id) => {
+                      removeAssignment(id)
+                    }}
+                  />
+                }
 
                 </div>
               </ListGroup.Item>
