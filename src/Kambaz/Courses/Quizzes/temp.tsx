@@ -9,50 +9,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { setQuizzes, deleteQuiz } from "./reducer";
 import * as coursesClient from "../client";
 import * as quizzesClient from "./client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function Quizzes() {
   const dispatch = useDispatch();
   const { cid } = useParams();
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const quizzes = useSelector((state: any) => state.quizzesReducer.quizzes);
-
-  const [grades, setGrades] = useState<{ [key: string]: string }>({});
-
   const fetchQuizzes = async () => {
     const quizzes = await coursesClient.findQuizzesForCourse(cid as string);
     dispatch(setQuizzes(quizzes));
-  };
-
+  }
   useEffect(() => {
     fetchQuizzes();
-  }, [cid]);
-
-  const getGrade = async (qid: string) => {
-    try {
-      const submission = await quizzesClient.getQuizSubmission(qid, currentUser._id);
-      console.log(submission);
-      console.log(submission.score);
-      if (submission && submission.score !== undefined) {
-        setGrades((prevGrades) => ({
-          ...prevGrades,
-          [qid]: submission.score,
-        }));
-      } else {
-        setGrades((prevGrades) => ({
-          ...prevGrades,
-          [qid]: 'No grade yet',
-        }));
-      }
-    } catch (err) {
-      console.log("Error fetching submission: ", err);
-      setGrades((prevGrades) => ({
-        ...prevGrades,
-        [qid]: 'No submission',
-      }));
-    }
-  };
-
+  }, []);
   const removeQuiz = async (quizId: string) => {
     await quizzesClient.deleteQuiz(quizId);
     dispatch(deleteQuiz(quizId));
@@ -68,7 +38,7 @@ export default function Quizzes() {
       return quiz;
     });
     dispatch(setQuizzes(updatedQuizzes));
-  };
+  }
 
   const getQuizStatus = (quiz: any) => {
     const now = new Date();
@@ -85,18 +55,20 @@ export default function Quizzes() {
     }
   };
 
+  const getGrade = async (qid: string) => {
+    try {
+        const submission = await quizzesClient.getQuizSubmission(qid, currentUser._id);
+        console.log(submission);
+        return submission.grade;
+    } catch (err) {
+        return("No previous submission found.");
+    }
+  }
+
   const filteredQuizzes =
     currentUser.role === "FACULTY"
       ? quizzes
       : quizzes.filter((quiz: any) => quiz.published);
-
-  useEffect(() => {
-    filteredQuizzes.forEach((quiz: any) => {
-      if (!grades[quiz._id]) {
-        getGrade(quiz._id);
-      }
-    });
-  }, [filteredQuizzes, grades]);
 
   return (
     <div>
@@ -111,8 +83,9 @@ export default function Quizzes() {
               <b>Assignment Quizzes</b>
             </div>
           </div>
-          {filteredQuizzes.map((quiz: any) => (
-            <ListGroup className="wd-lessons rounded-0" key={quiz._id}>
+          {filteredQuizzes
+          .map((quiz: any) => (
+            <ListGroup className="wd-lessons rounded-0">
               <ListGroup.Item className="wd-lesson p-3 ps-1 d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
                   <BsGripVertical className="me-2 fs-3" />
@@ -131,38 +104,36 @@ export default function Quizzes() {
                       </span>
                     </div>
                     <div>
-                      <span className="wd-padding-thin-sides">
-                        <b>Due</b> {new Date(quiz.dueDate).toLocaleString('en-US', { 
-                          weekday: 'long', 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric', 
-                          hour: 'numeric', 
-                          minute: 'numeric', 
-                          second: 'numeric', 
-                          hour12: true 
-                        })}
-                      </span>
+                    <span className="wd-padding-thin-sides">
+                      <b>Due</b> {new Date(quiz.dueDate).toLocaleString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: 'numeric', 
+                        minute: 'numeric', 
+                        second: 'numeric', 
+                        hour12: true 
+                      })}
+                    </span>
                       |
                       <span className="wd-padding-thin-sides">{quiz.points} pts</span>
-                    </div>
-                    <div className="wd-padding-thin-sides">
-                      <b>Grade:</b> {grades[quiz._id] || ''}
                     </div>
                   </Container>
                 </div>
                 <div className="d-flex justify-content-center ms-auto">
-                  {currentUser.role === "FACULTY" && cid &&
-                    <QuizControlButtons
-                      quizId={quiz._id}
-                      courseId={cid}
-                      onDelete={(id) => {
-                        removeQuiz(id);
-                      }}
-                      isPublished={quiz.published}
-                      onPublishToggle={onPublishToggle}
-                    />
-                  }
+                {currentUser.role === "FACULTY" && cid &&
+                  <QuizControlButtons
+                    quizId={quiz._id}
+                    courseId={cid}
+                    onDelete={(id) => {
+                      removeQuiz(id)
+                    }}
+                    isPublished={quiz.published}
+                    onPublishToggle={onPublishToggle}
+                  />
+                }
+
                 </div>
               </ListGroup.Item>
             </ListGroup>
@@ -172,3 +143,4 @@ export default function Quizzes() {
     </div>
   );
 }
+  

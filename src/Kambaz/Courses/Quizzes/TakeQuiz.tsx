@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Card, Form, Button } from 'react-bootstrap';
 import { findQuizById, getQuizSubmission, submitQuizAnswers } from './client';
 import { useSelector } from 'react-redux';
 
 export default function TakeQuiz() {
-    const { qid } = useParams();
+    const { cid, qid } = useParams();
     const { currentUser } = useSelector((state: any) => state.accountReducer);
 
     const [quiz, setQuiz] = useState<any>(null);
     const [answers, setAnswers] = useState<{ [key: string]: any }>({});
+    const navigate = useNavigate();
 
     useEffect(() => {
         console.log("qid: ", qid);
@@ -20,6 +21,12 @@ export default function TakeQuiz() {
             try {
                 const submission = await getQuizSubmission(qid, currentUser._id);
                 setAnswers(submission.answers);
+                console.log("Submissions: ", submission.numAttempts);
+                console.log("Allowed attempts: ", q.numAttempts);
+                if (submission.numAttempts >= q.numAttempts) {
+                    alert("Too many attempts");
+                    navigate(`/Kambaz/Courses/${cid}/Quizzes`);
+                }
             } catch (err) {
                 console.log("No previous submission found.");
             }
@@ -31,7 +38,9 @@ export default function TakeQuiz() {
         setAnswers({ ...answers, [index]: value });
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
         if (!quiz || !qid || !currentUser) return;
     
         let score = 0;
@@ -63,9 +72,11 @@ export default function TakeQuiz() {
             console.error("Failed to submit quiz", err);
             alert("There was a problem submitting your quiz.");
         }
+
+        navigate(`/Kambaz/Courses/${cid}/Quizzes`);
     };
 
-    if (!quiz) return <div>Loading quiz...</div>;
+    if (!quiz) return <div>Loading quiz</div>;
 
     return (
         <div>

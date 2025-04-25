@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Button, Form, Row, Col, Card } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { saveQuizQuestions, findQuizById } from './client';
 
 const QUESTION_TYPES = ['Multiple Choice', 'True/False', 'Fill in the Blank'];
 
 export default function QuestionsEditor() {
-    const { qid } = useParams();
+    const { cid, qid } = useParams();
     const [questions, setQuestions] = useState<any[]>([]);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [tempQuestion, setTempQuestion] = useState<any>(null);
 
     const totalPoints = questions.reduce((sum, q) => sum + (q.points || 0), 0);
+    const navigate = useNavigate();
 
     function defaultQuestion(type: string) {
         switch (type) {
@@ -91,6 +92,7 @@ export default function QuestionsEditor() {
             await saveQuizQuestions(qid, questions, totalPoints);
             alert('Questions saved!');
         }
+        navigate(`/Kambaz/Courses/${cid}/Quizzes`);
     };
 
     useEffect(() => {
