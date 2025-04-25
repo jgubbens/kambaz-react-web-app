@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Button, Form, Row, Col, Card } from 'react-bootstrap';
+import { Button, Form, Row, Col, Card, Dropdown, DropdownButton } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { saveQuizQuestions, findQuizById } from './client';
+import { saveQuizQuestions, findQuizById, getQuizSubmission } from './client';
+import { useSelector } from 'react-redux';
 
 const QUESTION_TYPES = ['Multiple Choice', 'True/False', 'Fill in the Blank'];
 
 export default function QuestionsEditor() {
     const { qid } = useParams();
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
+
     const [questions, setQuestions] = useState<any[]>([]);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [tempQuestion, setTempQuestion] = useState<any>(null);
-
-    const totalPoints = questions.reduce((sum, q) => sum + (q.points || 0), 0);
+    const [answers, setAnswers] = useState<{ [key: string]: any }>({});
+    const [totalPoints, setTotalPoints] = useState<number>(0);
 
     function defaultQuestion(type: string) {
         switch (type) {
@@ -78,7 +81,13 @@ export default function QuestionsEditor() {
             setQuestions(updatedQuestions);
             setEditingIndex(null);
             setTempQuestion(null);
+            updateTotalPoints(updatedQuestions);
         }
+    };
+
+    const updateTotalPoints = (questions: any[]) => {
+        const total = questions.reduce((sum, q) => sum + (q.points || 0), 0);
+        setTotalPoints(total);
     };
 
     const handleEditQuestion = (index: number) => {
@@ -93,43 +102,54 @@ export default function QuestionsEditor() {
         }
     };
 
-    useEffect(() => {
-        console.log('Loaded quiz ID:', qid);
+    const fetchQuizData = async () => {
+        if (!qid) return;
+        const quiz = await findQuizById(qid);
+        if (quiz?.questions) {
+            setQuestions(quiz.questions);
+            updateTotalPoints(quiz.questions);
+        }
 
-        const loadQuiz = async () => {
-            if (!qid) {
-                console.log("Quiz not found")
-                return;
-            } else {
-                console.log("Quiz Found");
+        if (currentUser._id) {
+            try {
+                const submission = await getQuizSubmission(qid, currentUser._id);
+                setAnswers(submission.answers);
+            } catch (err) {
+                console.log("No previous submission found.");
             }
-            const quiz = await findQuizById(qid);
-            console.log("Quiz: ", quiz);
-            if (quiz?.questions) {
-                setQuestions(quiz.questions);
-                console.log(quiz.questions);
-            } else {
-                console.log('Quiz has no questions field');
-            }
-        };
-        loadQuiz();
+        }
+    };
+
+    useEffect(() => {
+        fetchQuizData();
     }, [qid]);
+
+    const handleChangeAnswer = (index: number, value: any) => {
+        setAnswers((prevAnswers) => ({
+            ...prevAnswers,
+            [index]: value,
+        }));
+    };
 
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h4>Questions (Total Points: {totalPoints})</h4>
                 <div>
-                    {QUESTION_TYPES.map((type) => (
-                        <Button
-                            key={type}
-                            variant="danger"
-                            className="me-2"
-                            onClick={() => handleAddQuestion(type)}
-                        >
-                            New {type}
-                        </Button>
-                    ))}
+                    <DropdownButton
+                        variant="danger"
+                        className="me-2"
+                        title="New Question"
+                    >
+                        {QUESTION_TYPES.map((type) => (
+                            <Dropdown.Item
+                                key={type}
+                                onClick={() => handleAddQuestion(type)}
+                            >
+                                {type}
+                            </Dropdown.Item>
+                        ))}
+                    </DropdownButton>
                     <Button variant="success" onClick={handleSaveAllQuestions}>
                         Save All Questions
                     </Button>
