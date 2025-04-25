@@ -49,7 +49,7 @@ export default function QuizControlButtons({
         <GreenCheckmark />
       )}
       {!isPublished && (
-        <RiProhibitedLine onClick={handlePublishToggle}/>
+        <RiProhibitedLine />
       )}
 
         <IoEllipsisVertical
